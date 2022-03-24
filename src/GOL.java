@@ -15,6 +15,7 @@ public class GOL {
     private int width, length, delay;
     private int[][] gol1, gol2;
     private String ruleset;
+    private boolean fromFile;
 
     public static void main(String [] args) throws InterruptedException{
         // Math.random() * (max - min + 1) + min
@@ -101,13 +102,22 @@ public class GOL {
     }
 
     //constructors
+    //clone existing
+    public GOL(GOL other){
+        this.width = other.width;
+        this.length = other.length;
+        this.gol1 = other.gol1;
+        this.gol2 = other.gol2;
+        this.ruleset = other.ruleset;
+        this.fromFile = other.fromFile;
+    }
     //default settings. fills out intellij on default font size
     public GOL(){
         this.width = 227;
         this.length = 37;
         this.delay = 100;
         this.ruleset = "default";
-        initRandArr();
+        fromFile = false;
     }
     //customizable settings
     public GOL(int width, int length, int delay, String ruleset){
@@ -115,7 +125,7 @@ public class GOL {
         this.length = length;
         this.delay = delay;
         this.ruleset = ruleset;
-        initRandArr();
+        fromFile = false;
     }
     //feed array from code, custom settings
     public GOL(int arr[][], int delay, String ruleset){
@@ -123,12 +133,13 @@ public class GOL {
         this.ruleset = ruleset;
         gol1 = arr;
         gol2 = new int[arr.length][arr[1].length];
+        fromFile = false;
     }
     //feed array from file, custom settings
     public GOL(int delay, String ruleset) throws FileNotFoundException {
         this.delay = delay;
         this.ruleset = ruleset;
-        arrFromFile();
+        fromFile = true;
     }
 
     //make the arrays to the specified size and randomize the contents of the first array
@@ -170,19 +181,24 @@ public class GOL {
 
     //play functions. each function calls the bottom most function
     //default play setting. perpetual, 500 generations per run, 100 ms delay b/w generations
-    public void play() throws InterruptedException{ //TODO
+    public void play() throws InterruptedException, FileNotFoundException{ //TODO
         while (true) play(1, 500);
     }
     //custom perpetual. perpetual, <int generations> per run, <int delay> ms delay b/w generations
-    public void play(int generations) throws InterruptedException{
+    public void play(int generations) throws InterruptedException, FileNotFoundException{
         while (true) play(1, generations);
     }
     //customizable settings. <int iterations> runs, <int generations> generations per run, <int delay> ms delay b/w generations
-    public void play(int iterations, int generations) throws InterruptedException{ //TODO
+    public void play(int iterations, int generations) throws InterruptedException, FileNotFoundException{ //TODO
         int isAlive, nCount;
         boolean canLeft, canRight, canUp, canDown;
 
         for (int l = 0; l < iterations; l++) {
+            if (fromFile){
+                arrFromFile();
+            } else{
+                initRandArr();
+            }
             System.out.println("Generation 0:");
             iterOutGOL(gol1);
             for (int x = 0; x < generations; x++) {
